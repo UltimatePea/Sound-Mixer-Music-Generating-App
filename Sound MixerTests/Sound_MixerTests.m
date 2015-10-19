@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
+#import "Note.h"
 
 @interface Sound_MixerTests : XCTestCase
 
@@ -28,7 +29,27 @@
 - (void)testExample {
     // This is an example of a functional test case.
     XCTAssert(YES, @"Pass");
+    
+   BOOL res =  [ @[@"d"] containsObject:@"d"] ;
+    XCTAssert(res);
 }
+
+- (void)testNoteClass
+{
+    Note *note = [[Note alloc] initWithUniqueIdentifier:87];
+    XCTAssertEqual(note.uniqueIdentifier, [[Note alloc] initWithFilename:note.audioFilename].uniqueIdentifier);
+    
+    
+}
+
+- (void)testNoteClass2
+{
+    Note *note = [[Note alloc] initWithFilename:@"3G"];
+    Note *octavelyHigher = [[Note alloc]  initWithFilename:@"4G"];
+    XCTAssertEqual((note.uniqueIdentifier - octavelyHigher.uniqueIdentifier )% 12, 0);
+    
+}
+
 
 - (void)testPerformanceExample {
     // This is an example of a performance test case.
