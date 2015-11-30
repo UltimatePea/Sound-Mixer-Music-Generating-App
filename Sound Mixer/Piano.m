@@ -14,6 +14,7 @@
 @interface Piano ()
 
 @property ( nonatomic) int currentTimerCount;
+@property (nonatomic) BOOL shouldContinue;
 
 @end
 
@@ -21,8 +22,9 @@
 
 - (void)play
 {
+    self.shouldContinue = YES;
     [self.sheetMusic.scores makeObjectsPerformSelector:@selector(preplay)];
-    [Timer timerWithFireDuration:0.25 invoking:^BOOL{
+    [Timer timerWithFireDuration:self.duration invoking:^BOOL{
         
         [self.sheetMusic.scores enumerateObjectsUsingBlock:^(Score * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if (obj.playTime == self.currentTimerCount) {
@@ -30,8 +32,18 @@
             }
         }];
         self.currentTimerCount ++;
-        return YES;
+        return self.shouldContinue;
     } recursive:YES];
+}
+
+- (void)stop
+{
+    self.shouldContinue = NO;
+}
+
+- (BOOL)isplaying
+{
+    return self.shouldContinue;
 }
 
 @end

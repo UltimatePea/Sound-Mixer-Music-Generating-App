@@ -11,6 +11,6 @@
 
 @interface MusicComposer : NSObject
 
-- (SheetMusic *)composeMusicForBaseNotename:(NSString *)notename;
+- (SheetMusic *)composeMusicForBaseNotename:(NSString *)notename withNumberOfMainChapters:(int)number;
 
 @end

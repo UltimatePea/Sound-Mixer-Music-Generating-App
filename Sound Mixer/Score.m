@@ -56,6 +56,7 @@
 
 - (void)preplay;
 {
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:nil];
     SystemSoundID soundID;
     NSURL *url = [[NSBundle mainBundle] URLForResource:[NSString stringWithFormat:@"gb%@", self.note.audioFilename] withExtension:@"mp3"];
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)url, &soundID);

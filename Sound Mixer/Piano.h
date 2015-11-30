@@ -11,6 +11,8 @@
 @interface Piano : NSObject
 
 @property (strong, nonatomic) SheetMusic *sheetMusic;
-
+- (void)stop;
 - (void)play;
+@property (nonatomic) BOOL isplaying;
+@property (nonatomic) float duration;
 @end

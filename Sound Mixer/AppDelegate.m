@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+@import AVFoundation;
 @interface AppDelegate ()
 
 @end
@@ -18,6 +18,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     self.window.tintColor = [UIColor colorWithRed:50.0f/255.0f green:157.0f/255.0f blue:83.0f/255.0f alpha:0.5];
+    NSError *err;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:&err];
+    if (err) {
+        NSLog(@"SETTING ERROR");
+    }
     //self.window.tintColor = [UIColor colorWithHue:138/360 saturation:68/100 brightness:62/100 alpha:0.0];
     return YES;
 }

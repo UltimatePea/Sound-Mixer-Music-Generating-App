@@ -19,26 +19,40 @@
 @property (nonatomic) int baseIndex;
 @property (strong, nonatomic) NSArray<NSNumber *> *domain;
 @property (strong, nonatomic) SheetMusic *sheetMusic;
+@property ( nonatomic) int currentDuration;
 @end
 
 @implementation MusicComposer
 
-- (SheetMusic *)composeMusicForBaseNotename:(NSString *)notename;
+- (SheetMusic *)sheetMusic
+{
+    if (!_sheetMusic) {
+        _sheetMusic = [[SheetMusic alloc] init];
+    }
+    return _sheetMusic;
+}
+
+- (SheetMusic *)composeMusicForBaseNotename:(NSString *)notename withNumberOfMainChapters:(int)number
+
 {
     Note *note = [[Note alloc] initWithFilename:notename];
     if (note == nil) {
         return nil;
     }
     self.baseIndex = note.uniqueIdentifier;
-    return [self startMusicProductionProcess];
+    return [self startMusicProductionProcessWithNumberOfMainChapters:number];
 }
 
-- (SheetMusic *)startMusicProductionProcess
+- (SheetMusic *)startMusicProductionProcessWithNumberOfMainChapters:(int)number
 {
+    self.currentDuration = 0;
+    self.sheetMusic = nil;
     [self defineNoteDomain];
-    [self generateMainMelody];//creates sheet music
+    [self generateMainMelodyWithNumberOfMainChapters:number];//creates sheet music
     return self.sheetMusic;
 }
+
+
 
 - (void)defineNoteDomain
 {
@@ -63,7 +77,33 @@
     
 }
 
-- (void)generateMainMelody
+- (void)generateMainMelodyWithNumberOfMainChapters:(int)number
+{
+    if (number == 1) {
+        [self createAndAddMelodyWithCompletionBlock:^(NSArray<NSNumber *> *melody, NSArray<NSNumber *> *multiplier) {
+            
+        }];
+        return;
+    }
+    __block NSArray *readdingMelody1, *readdingMelody2, *readdingMultiplier1, *readdingMultiplier2;
+    for (int i =0; i < number; i ++) {
+        [self createAndAddMelodyWithCompletionBlock:^(NSArray<NSNumber *> *melody, NSArray<NSNumber *> *multiplier) {
+            if (i == 0) {
+                readdingMelody1 = melody;
+                readdingMultiplier1 = multiplier;
+                
+            } else if (i == 1){
+                readdingMelody2 = melody;
+                readdingMultiplier2 = multiplier;
+            }
+        }];
+    }
+    
+    [self addToSheetMusicMelody:readdingMelody1 noteDurationMultiplier:readdingMultiplier1];
+    [self addToSheetMusicMelody:readdingMelody2 noteDurationMultiplier:readdingMultiplier2];
+}
+
+- (void)createAndAddMelodyWithCompletionBlock:(void (^)(NSArray<NSNumber *> *melody, NSArray<NSNumber *> *multiplier))completionBlock
 {
     //get first score and initial position
     __block int firstScore, position;
@@ -113,24 +153,29 @@
     }
     /////DONE CREATING FIRST MELODY////////
     
-    /////GENERATE SUBSEQUENT BACKGROUND FOR FIRST MELODY/////////
+    
     
     NSMutableArray *firstBackground = [NSMutableArray array];
+    [self addToSheetMusicMelody:firstMelody noteDurationMultiplier:noteDurationMultiplier];
+    completionBlock(firstMelody, noteDurationMultiplier);
     
     
-    
+}
+
+
+- (void)addToSheetMusicMelody:(NSArray<NSNumber *> *)firstMelody noteDurationMultiplier:(NSArray<NSNumber *> *)noteDurationMultiplier
+{
     //create sheet music
-    SheetMusic *sm = [[SheetMusic alloc] init];
+    SheetMusic *sm = self.sheetMusic;
+
     
-    __block int currentDuration = 0;
-    
-    for (int i = 0; i < 2; i ++)
+    for (int i = 0; i < 2; i ++){
         
     [firstMelody enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         int index = self.domain[obj.intValue].intValue;
         int multiplier = noteDurationMultiplier[idx].intValue;
-        currentDuration += multiplier;
-        
+        self.currentDuration += multiplier;
+        int currentDuration = self.currentDuration;
         //create background melody
         if (([firstMelody count] - idx - 1 )%4 ==0) {
             int baseIdx =  index - 2 * 12;
@@ -142,14 +187,11 @@
         
         
         [sm.scores addObject:[Score scoreWithNoteID:index playtime:currentDuration]];
+        
     }];
-    self.sheetMusic = sm;
-}
-
-
-- (void)addMelodyToSheetMusic
-{
-    
+        self.currentDuration += 4;
+    }
+//    self.sheetMusic = sm;
 }
 
 
