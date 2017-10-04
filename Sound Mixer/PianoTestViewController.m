@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UISlider *paceSlider;
 @property (weak, nonatomic) IBOutlet UILabel *indicator;
 @property (strong, nonatomic) Piano *piano;
+@property (weak, nonatomic) IBOutlet UITextField *textField;
 
 @end
 
@@ -54,7 +55,11 @@
         [self.piano stop];
         return;
     }
-    SheetMusic *sm = [[[MusicComposer alloc] init] composeMusicForBaseNotename:@"3G"withNumberOfMainChapters:(int)self.slider.value];
+    SheetMusic *sm = [[[MusicComposer alloc] init] composeMusicForBaseNotename:
+                      
+                      //@"3G"
+                      self.textField.text
+                                                      withNumberOfMainChapters:(int)self.slider.value];
     
     //// MANUALLY
     //    [[SheetMusic alloc] init];
